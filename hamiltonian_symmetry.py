@@ -94,86 +94,66 @@ def onebody_symm_basis(symm_ops):
                 Asymm_list.append(Asymm)
     return Asymm_list
 
-def return_symm_inv_ops_H1( geom, symm_ops, return_rand_H = True ):
-    '''
-    This function takes in a geometry to constructs a random hermitian 1-body 
-    Hamiltonian.
-    The symmetry operators are then performed on the random Hamiltonian to
-    find a Hamiltonian invariant to the symmetry operators given.
+def symmetrize_twobody(O, symm_ops):
+    """
+    Args: 
+    O: a four-index (two-body) operator
+    symm_ops: symmetry operations
+
+    Returns: 
+    O_symm : a symmetrized version of O
+    """
+    O_symm = np.zeros_like(O)
+    for operation in symm_ops:
+        O_symm += np.einsum('ai,bj,ck,dl, ijkl -> abcd', operation, operation, operation, operation, O)
+    O_symm/=symm_ops.shape[0]
+    return O_symm
+
+def random_H2(symm_ops):
+    """
+    This function takes in a system's symmetry operators to constructs a random
+    hermitian 2-body Hamiltonian.
 
     Args: 
-    geom : the cartesian coordinates of atoms, 2D array, Nx3
-    symm_ops : float, 
-    return_rand_H : boolean , changes outputs
+    symm_ops: symmetry operations
 
     Returns:
-    symm_inv_ops :
-    rand_H : , only returned if conjugate input is True
-    '''
-
-    N = geom.shape[0]
-    H = np.random.randn(N,N)
-    rand_H = 0.5*(H+H.T) # Hermitian
-
-    rand_symm_H = np.zeros((N,N))
-    for i in np.arange(symm_ops.shape[0]):
-        rand_symm_H += np.einsum('ai,bj, ij -> ab', symm_ops[i], symm_ops[i], rand_H)
-    rand_symm_H /= symm_ops.shape[0]
-
-    rounded_symm_H = np.round(rand_symm_H, decimals=4) # floating point error solution
-    uni_vals = np.unique(rounded_symm_H)
-
-    symm_inv_ops = []
-    for n in np.arange(len(uni_vals)):
-        i, j = np.where( rounded_symm_H == uni_vals[n] )
-        symm_inv_ops.append( np.array((i,j)).T )
-    symm_inv_ops = np.array(symm_inv_ops)
-
-    if return_rand_H:
-        return symm_inv_ops, rand_symm_H
-
-    return symm_inv_ops
-
-def return_symm_inv_ops_H2( geom, symm_ops, return_rand_H = True ):
-    '''
-    This function takes in a geometry to constructs a random hermitian 2-body 
-    Hamiltonian.
-    The symmetry operators are then performed on the random Hamiltonian to
-    find a Hamiltonian invariant to the symmetry operators given.
-
-    Args:
-    geom : the cartesian coordinates of atoms, 2D array, Nx3
-    symm_ops : float, 
-    return_rand_H : boolean , changes outputs
-
-    Returns:
-    symm_inv_ops :
-    rand_H : , only returned if conjugate input is True
-    '''
-
-    N = geom.shape[0]
+    Random, symmetric one-body hamiltonian
+    """
+    N = symm_ops.shape[1]
     H = np.random.randn(N,N,N,N)
-    rand_H = 0.5*(H+H.T) # Hermitian
+    H = 0.5*(H+H.T) # Hermitian
+    return symmetrize_twobody(H, symm_ops)
 
-    rand_symm_H = np.zeros((N,N,N,N))
-    for i in np.arange(symm_ops.shape[0]):
-        rand_symm_H += np.einsum('ai,bj,ck,dl,ijkl -> abcd', symm_ops[i], symm_ops[i], symm_ops[i], symm_ops[i], rand_H)
-    rand_symm_H /= symm_ops.shape[0]
+def twobody_symm_basis(symm_ops):
+    """
+    Takes each element of two-body Hamiltonian and symmetrizes it to find
+    symmetric invariant operators.
+    Only the unique operators are returned.
 
-    rounded_symm_H = np.round(rand_symm_H, decimals=4) # floating point error solution
-    uni_vals = np.unique(rounded_symm_H)
+    Args: 
+    symm_ops: symmetry operations
 
-    symm_inv_ops = []
-    for n in np.arange(len(uni_vals)):
-        i, j, k, l = np.where( rounded_symm_H == uni_vals[n] )
-        symm_inv_ops.append( np.array((i,j,k,l)).T )
-    symm_inv_ops = np.array(symm_inv_ops)
-
-    if return_rand_H:
-        return symm_inv_ops, rand_symm_H
-
-    return symm_inv_ops
-
+    Returns:
+    Basis of symmetric invariant one-body operators
+    """
+    N = symm_ops.shape[1]
+    Asymm_list =[]
+    for i in range(N):
+        for j in range(N):
+            for k in range(N):
+                for l in range(N):
+                    A = np.zeros((N,N,N,N))
+                    A[i,j,k,l]=1.0
+                    Asymm = symmetrize_twobody(A, symm_ops)
+                    found=False
+                    for As in Asymm_list:
+                        if np.allclose(As, Asymm):
+                            found=True
+                            break
+                    if not found:
+                        Asymm_list.append(Asymm)
+    return Asymm_list
 
 if __name__ == "__main__":
 
@@ -188,6 +168,10 @@ if __name__ == "__main__":
 
     symm_ops = get_site_symm_ops(species, coords) # Gives atom and s orb symms
 
-    print("symmetry operations", symm_ops)
-    print("Random 1-body Hamiltonian: ", random_H1(symm_ops))
-    print("1-body basis: ", onebody_symm_basis(symm_ops))
+    print("\n symmetry operations: \n", symm_ops)
+
+    print("\nRandom 1-body Hamiltonian: \n", random_H1(symm_ops))
+    print("\n1-body basis: \n", onebody_symm_basis(symm_ops))
+
+    print("\nRandom 2-body Hamiltonian: \n", random_H2(symm_ops))
+    print("\n2-body basis size: \n", len(twobody_symm_basis(symm_ops)))
