@@ -5,13 +5,13 @@ from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 
 def get_site_symm_ops(species, geom, center = True):
     """
-    input: 
+    Args: 
     species: list of atom types ex: ["C", "H", "H"]
     geom: list of atom positions ex np.array([[0.,0.,0.],...])
     center: whether to center the molecule around the center of mass. This often will be the most symmetry.
 
-    output: 
-    a boolean ndarray of shape [nsymmops, natoms, natoms], with true where atom i is equivalent to atom j under 
+    Returns: 
+    site_symm_ops : a boolean ndarray of shape [nsymmops, natoms, natoms], with true where atom i is equivalent to atom j under 
     that particular symmetry operation
     """
     
@@ -35,11 +35,12 @@ def get_site_symm_ops(species, geom, center = True):
 
 def symmetrize_onebody(O, symm_ops):
     """
+    Args: 
     O: a two-index (one-body) operator
     symm_ops: symmetry operations
 
     Returns: 
-    a symmetrized version of O
+    O_symm : a symmetrized version of O
     """
     O_symm = np.zeros_like(O)
     for operation in symm_ops:
@@ -50,6 +51,14 @@ def symmetrize_onebody(O, symm_ops):
 
 def random_H1(symm_ops):
     """
+    This function takes in a system's symmetry operators to constructs a random
+    hermitian 1-body Hamiltonian.
+
+    Args: 
+    symm_ops: symmetry operations
+
+    Returns:
+    Random, symmetric one-body hamiltonian
     """
     N = symm_ops.shape[1]
     H = np.random.randn(N,N)
@@ -59,7 +68,15 @@ def random_H1(symm_ops):
 
 def onebody_symm_basis(symm_ops):
     """
+    Takes each element of one-body Hamiltonian and symmetrizes it to find
+    symmetric invariant operators.
+    Only the unique operators are returned.
 
+    Args: 
+    symm_ops: symmetry operations
+
+    Returns:
+    Basis of symmetric invariant one-body operators
     """
     N = symm_ops.shape[1]
     Asymm_list =[]
@@ -84,10 +101,12 @@ def return_symm_inv_ops_H1( geom, symm_ops, return_rand_H = True ):
     The symmetry operators are then performed on the random Hamiltonian to
     find a Hamiltonian invariant to the symmetry operators given.
 
+    Args: 
     geom : the cartesian coordinates of atoms, 2D array, Nx3
     symm_ops : float, 
     return_rand_H : boolean , changes outputs
 
+    Returns:
     symm_inv_ops :
     rand_H : , only returned if conjugate input is True
     '''
@@ -122,10 +141,12 @@ def return_symm_inv_ops_H2( geom, symm_ops, return_rand_H = True ):
     The symmetry operators are then performed on the random Hamiltonian to
     find a Hamiltonian invariant to the symmetry operators given.
 
+    Args:
     geom : the cartesian coordinates of atoms, 2D array, Nx3
     symm_ops : float, 
     return_rand_H : boolean , changes outputs
 
+    Returns:
     symm_inv_ops :
     rand_H : , only returned if conjugate input is True
     '''
@@ -165,12 +186,8 @@ if __name__ == "__main__":
              ]
     coords = np.array(coords)
 
-    symm_ops = get_site_symm_ops(species, coords)
+    symm_ops = get_site_symm_ops(species, coords) # Gives atom and s orb symms
 
     print("symmetry operations", symm_ops)
-    onebody_symm_basis(symm_ops)
-    #symm_inv_ops, rand_symm_H = return_symm_inv_ops_H1(coords, symm_ops)
-
-    print(rand_symm_H)
-    print()
-    print(symm_inv_ops[0])
+    print("Random 1-body Hamiltonian: ", random_H1(symm_ops))
+    print("1-body basis: ", onebody_symm_basis(symm_ops))
