@@ -145,6 +145,7 @@ def twobody_symm_basis(symm_ops):
                 for l in range(N):
                     A = np.zeros((N,N,N,N))
                     A[i,j,k,l]=1.0
+                    A[l,k,j,i]=1.0
                     Asymm = symmetrize_twobody(A, symm_ops)
                     found=False
                     for As in Asymm_list:
