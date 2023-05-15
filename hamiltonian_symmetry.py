@@ -5,14 +5,21 @@ from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 
 def get_site_symm_ops(species, geom, center = True):
     """
+    Grabs point group symmetry of an arrangement of atoms. Uses pymatgen to grab
+    the cartesian symmetry operators for said point group. Then converts the
+    cartesian symmetry operators to the site based symmetry operators where each
+    site is located at each atom.
+
     Args: 
     species: list of atom types ex: ["C", "H", "H"]
     geom: list of atom positions ex np.array([[0.,0.,0.],...])
-    center: whether to center the molecule around the center of mass. This often will be the most symmetry.
+    center: whether to center the molecule around the center of mass. This often
+            will be the most symmetry.
 
     Returns: 
-    site_symm_ops : a boolean ndarray of shape [nsymmops, natoms, natoms], with true where atom i is equivalent to atom j under 
-    that particular symmetry operation
+    site_symm_ops : a boolean ndarray of shape [nsymmops, natoms, natoms], with 
+                    true where atom i is equivalent to atom j under that 
+                    particular symmetry operation
     """
     
     mol = Molecule(species, geom)
@@ -35,12 +42,14 @@ def get_site_symm_ops(species, geom, center = True):
 
 def symmetrize_onebody(O, symm_ops):
     """
+    Performs symm_op.T @ O @ symm_op and averages for length of symm_ops. 
+
     Args: 
-    O: a two-index (one-body) operator
-    symm_ops: symmetry operations
+    O: a two-index (one-body) operator, shape [nsites, nsites]
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns: 
-    O_symm : a symmetrized version of O
+    O_symm : a symmetrized version of O, shape [nsites, nsites]
     """
     O_symm = np.zeros_like(O)
     for operation in symm_ops:
@@ -55,10 +64,10 @@ def random_H1(symm_ops):
     hermitian 1-body Hamiltonian.
 
     Args: 
-    symm_ops: symmetry operations
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns:
-    Random, symmetric one-body hamiltonian
+    Random, symmetric one-body hamiltonian with shape [nsites, nsites]
     """
     N = symm_ops.shape[1]
     H = np.random.randn(N,N)
@@ -73,10 +82,11 @@ def onebody_symm_basis(symm_ops):
     Only the unique operators are returned.
 
     Args: 
-    symm_ops: symmetry operations
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns:
-    Basis of symmetric invariant one-body operators
+    Basis of one-body operators invariant to the symm_ops. 
+    Shape [N, nsites, nsites] where N changes based on symm_ops used.
     """
     N = symm_ops.shape[1]
     Asymm_list =[]
@@ -96,12 +106,14 @@ def onebody_symm_basis(symm_ops):
 
 def symmetrize_twobody(O, symm_ops):
     """
+    Performs symm_op.T @ O @ symm_op and averages for length of symm_ops. 
+
     Args: 
-    O: a four-index (two-body) operator
-    symm_ops: symmetry operations
+    O: a four-index (two-body) operator, shape [nsites, nsites, nsites, nsites]
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns: 
-    O_symm : a symmetrized version of O
+    O_symm : a symmetrized version of O, shape [nsites, nsites, nsites, nsites]
     """
     O_symm = np.zeros_like(O)
     for operation in symm_ops:
@@ -115,10 +127,10 @@ def random_H2(symm_ops):
     hermitian 2-body Hamiltonian.
 
     Args: 
-    symm_ops: symmetry operations
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns:
-    Random, symmetric one-body hamiltonian
+    Random, two-body Hamiltonian invariant to the symm_ops given.  
     """
     N = symm_ops.shape[1]
     H = np.random.randn(N,N,N,N)
@@ -132,10 +144,12 @@ def twobody_symm_basis(symm_ops):
     Only the unique operators are returned.
 
     Args: 
-    symm_ops: symmetry operations
+    symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
 
     Returns:
-    Basis of symmetric invariant one-body operators
+    Basis of two-body operators invariant to the symm_ops. 
+    Shape [N, nsites, nsites, nsites, nsites] where N changes based on symm_ops
+    used.
     """
     N = symm_ops.shape[1]
     Asymm_list =[]
@@ -157,6 +171,10 @@ def twobody_symm_basis(symm_ops):
     return Asymm_list
 
 if __name__ == "__main__":
+
+    '''
+    Test with the H_4 molecule which has D4h symmetry.
+    '''
 
     species = ["H", "H", "H", "H"]
 
