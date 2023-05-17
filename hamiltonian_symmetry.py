@@ -91,9 +91,10 @@ def onebody_symm_basis(symm_ops):
     N = symm_ops.shape[1]
     Asymm_list =[]
     for i in range(N):
-        for j in range(N):
+        for j in range(i+1): # Only need to go over upper triangle elements
             A = np.zeros((N,N))
-            A[i,j]=1.0
+            A[i,j]+= 0.5
+            A[j,i]+= 0.5  # Normalized Hermitian
             Asymm = symmetrize_onebody(A, symm_ops)
             found=False
             for As in Asymm_list:
@@ -101,6 +102,8 @@ def onebody_symm_basis(symm_ops):
                     found=True
                     break
             if not found:
+                if not np.allclose(Asymm, Asymm.T):
+                    raise Exception("Did not produce a Hermitian Asymm")
                 Asymm_list.append(Asymm)
     return Asymm_list
 
@@ -154,12 +157,12 @@ def twobody_symm_basis(symm_ops):
     N = symm_ops.shape[1]
     Asymm_list =[]
     for i in range(N):
-        for j in range(N):
-            for k in range(N):
-                for l in range(N):
+        for j in range(i+1): # Only need to go over upper triangle elements
+            for k in range(i+1):
+                for l in range(i+1): 
                     A = np.zeros((N,N,N,N))
-                    A[i,j,k,l]=1.0
-                    A[l,k,j,i]=1.0
+                    A[i,j,k,l]+= 0.5
+                    A[l,k,j,i]+= 0.5  # Normalized Hermitian
                     Asymm = symmetrize_twobody(A, symm_ops)
                     found=False
                     for As in Asymm_list:
@@ -167,6 +170,8 @@ def twobody_symm_basis(symm_ops):
                             found=True
                             break
                     if not found:
+                        if not np.allclose(Asymm, Asymm.T):
+                            raise Exception("Did not produce a Hermitian Asymm")
                         Asymm_list.append(Asymm)
     return Asymm_list
 
