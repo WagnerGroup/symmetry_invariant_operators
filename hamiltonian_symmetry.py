@@ -3,6 +3,8 @@ import numpy as np
 from pymatgen.core import Molecule
 from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 
+import h5py
+
 def get_site_symm_ops(species, geom, center = True):
     """
     Grabs point group symmetry of an arrangement of atoms. Uses pymatgen to grab
@@ -174,6 +176,26 @@ def twobody_symm_basis(symm_ops):
                             raise Exception("Did not produce a Hermitian Asymm")
                         Asymm_list.append(Asymm)
     return Asymm_list
+
+def save_symm_term_group( fname, symm_terms):
+    '''
+    Args:
+        fname : str
+        symm_terms : 1-body or 2-body symm_terms given by onebody_symm_basis() 
+        or twobody_symm_basis()
+    
+    Creates hdf5 file storing basis of symmetric terms in a minimal grouping. 
+    Stores the number of sites, operator, indicies of sites.
+    '''
+
+    with h5py.File( fname, 'w') as f:
+        f['minimal_groups'] = len(symm_terms)
+        for i, symm_term in enumerate(symm_terms):
+            index = np.array(np.where(symm_term != 0)).T
+            f[f'group{i}/nsites']   = len(np.unique(index[0]))
+            f[f'group{i}/operator'] = symm_term
+            f[f'group{i}/indices']  = index
+    return
 
 if __name__ == "__main__":
 
