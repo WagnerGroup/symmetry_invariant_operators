@@ -163,8 +163,10 @@ def twobody_symm_basis(symm_ops):
             for k in range(i+1):
                 for l in range(i+1): 
                     A = np.zeros((N,N,N,N))
-                    A[i,j,k,l]+= 0.5
-                    A[l,k,j,i]+= 0.5  # Normalized Hermitian
+                    A[i,j,k,l]+= 0.25 # Intial Guess
+                    A[l,k,j,i]+= 0.25 # Hermitian
+                    A[k,l,i,j]+= 0.25 # Spin exchange symm (time-reversal symm for fermions)
+                    A[j,i,l,k]+= 0.25 # Hermitian
                     Asymm = symmetrize_twobody(A, symm_ops)
                     found=False
                     for As in Asymm_list:
