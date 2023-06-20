@@ -200,6 +200,42 @@ def save_symm_term_group( fname, symm_terms):
             f[f'group{i}/indices']  = index
     return
 
+def generate_group(current_list, generators):
+    """
+    current_list: list of symmetry operators currently in the set. Should be numpy 2D arrays. 
+    generators: list of symmetry generators. Should be numpy 2D arrays. 
+
+    EXAMPLE: c3v for a triangle
+    generators = np.asarray( [ 
+    [ #Identity
+      [1,0,0],
+      [0,1,0],
+      [0,0,1],
+    ],
+    [ #rotation
+      [0,1,0],
+      [0,0,1],
+      [1,0,0],
+    ],
+    [ #mirror
+      [1,0,0],
+      [0,0,1],
+      [0,1,0],
+    ],
+    ])
+    symmetry_operations = generate_group(generators, generators)
+    """
+    added_ops = []
+    for op in current_list:
+        for gen in generators:
+            added_ops.append(gen@op)
+    new_list = np.unique(np.vstack((current_list, np.asarray(added_ops))), axis=0)
+
+    if new_list.shape[0] == current_list.shape[0]:
+        return new_list
+    return generate_group(new_list, generators)
+
+
 if __name__ == "__main__":
 
     '''
