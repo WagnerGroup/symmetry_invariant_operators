@@ -95,10 +95,10 @@ def onebody_symm_basis(symm_ops):
     for i in range(N):
         for j in range(i+1): # Only need to go over upper triangle elements
             A = np.zeros((N,N))
-            A[i,j]+= 0.5
-            A[j,i]+= 0.5  # Normalized Hermitian
+            A[i,j]+= 1.0
+            A[j,i]+= 1.0  # Normalized Hermitian
             Asymm = symmetrize_onebody(A, symm_ops)
-            found=False
+            found=np.allclose(Asymm, np.zeros_like(Asymm))
             for As in Asymm_list:
                 if np.allclose(As, Asymm):
                     found=True
@@ -106,6 +106,7 @@ def onebody_symm_basis(symm_ops):
             if not found:
                 if not np.allclose(Asymm, Asymm.T):
                     raise Exception("Did not produce a Hermitian Asymm")
+                Asymm/=Asymm.max()
                 Asymm_list.append(Asymm)
     return Asymm_list
 
@@ -168,7 +169,7 @@ def twobody_symm_basis(symm_ops):
                     A[k,l,i,j]+= 0.25 # Spin exchange symm (time-reversal symm for fermions)
                     A[j,i,l,k]+= 0.25 # Hermitian
                     Asymm = symmetrize_twobody(A, symm_ops)
-                    found=False
+                    found=np.allclose(Asymm, np.zeros_like(Asymm))
                     for As in Asymm_list:
                         if np.allclose(As, Asymm):
                             found=True
@@ -215,7 +216,8 @@ if __name__ == "__main__":
     coords = np.array(coords)
 
     symm_ops = get_site_symm_ops(species, coords) # Gives atom and s orb symms
-
+    from rich import print
+    print(symm_ops)
     print("\n symmetry operations: \n", symm_ops)
 
     print("\nRandom 1-body Hamiltonian: \n", random_H1(symm_ops))
