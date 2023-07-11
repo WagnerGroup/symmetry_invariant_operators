@@ -99,6 +99,7 @@ def onebody_symm_basis(symm_ops):
             A[j,i]+= 1.0  # Normalized Hermitian
             Asymm = symmetrize_onebody(A, symm_ops)
             found=np.allclose(Asymm, np.zeros_like(Asymm))
+            Asymm/=Asymm.max()
             for As in Asymm_list:
                 if np.allclose(As, Asymm):
                     found=True
@@ -106,7 +107,6 @@ def onebody_symm_basis(symm_ops):
             if not found:
                 if not np.allclose(Asymm, Asymm.T):
                     raise Exception("Did not produce a Hermitian Asymm")
-                Asymm/=Asymm.max()
                 Asymm_list.append(Asymm)
     return Asymm_list
 
@@ -170,6 +170,7 @@ def twobody_symm_basis(symm_ops):
                     A[j,i,l,k]+= 0.25 # Hermitian
                     Asymm = symmetrize_twobody(A, symm_ops)
                     found=np.allclose(Asymm, np.zeros_like(Asymm))
+                    Asymm/=Asymm.max()
                     for As in Asymm_list:
                         if np.allclose(As, Asymm):
                             found=True
