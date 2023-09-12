@@ -264,6 +264,37 @@ def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, 
         return new_list
     return generate_group(new_list, generators, iteration=iteration+1)
 
+def generate_rotation_p_orbitals(a:float, b:float, norb:int=3, tol:float=1e-4, basis_change=None):
+    # http://openmopac.net/manual/rotate_atomic_orbitals.html
+    # Basis ordering: {p_{x}, p_{y}, p_{z}}
+    # Spherical coordinates: a = rotation angle about z in radians, b = rotation angle about x in radians
+    if basis_change is None:
+        basis_change = np.eye(norb)
+
+    R_pi_plus_x_x  = np.cos(a) * np.cos(b)
+    R_pi_minus_x_x = np.sin(a) * np.cos(b)
+    R_sigma_x_x    = -np.sin(b)
+
+    R_pi_plus_y_y  = -np.sin(a)
+    R_pi_minus_y_y = np.cos(a)
+    R_sigma_y_y    = 0
+
+    R_pi_plus_z_z  = np.cos(a) * np.sin(b)
+    R_pi_minus_z_z = np.sin(a) * np.sin(b)
+    R_sigma_z_z    = np.cos(b)
+
+    symmop = np.array(
+        [
+            [R_pi_plus_x_x , R_pi_plus_y_y , R_pi_plus_z_z ],
+            [R_pi_minus_x_x, R_pi_minus_y_y, R_pi_minus_z_z],
+            [R_sigma_x_x   , R_sigma_y_y   , R_sigma_z_z   ],
+        ]
+    )
+    symmop = np.einsum("ij,ai,bj->ab", symmop, basis_change, basis_change)
+    assert np.linalg.norm(np.einsum("ij,jk->ik", symmop.T, symmop) - np.eye(norb)) < tol # norm check
+
+    return symmop
+
 if __name__ == "__main__":
 
     '''
