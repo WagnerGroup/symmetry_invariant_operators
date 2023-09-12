@@ -1,11 +1,12 @@
 import numpy as np
+from typing import List
 
 from pymatgen.core import Molecule
 from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 
 import h5py
 
-def get_site_symm_ops(species, geom, center = True):
+def get_site_symm_ops(species:List[str], geom:np.ndarray, center:bool = True) -> np.ndarray:
     """
     Grabs point group symmetry of an arrangement of atoms. Uses pymatgen to grab
     the cartesian symmetry operators for said point group. Then converts the
@@ -42,7 +43,7 @@ def get_site_symm_ops(species, geom, center = True):
 
     return site_symm_ops
 
-def symmetrize_onebody(O, symm_ops):
+def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):
     """
     Performs symm_op.T @ O @ symm_op and averages for length of symm_ops. 
 
@@ -60,7 +61,7 @@ def symmetrize_onebody(O, symm_ops):
     return O_symm
 
 
-def random_H1(symm_ops):
+def random_H1(symm_ops:np.ndarray):
     """
     This function takes in a system's symmetry operators to constructs a random
     hermitian 1-body Hamiltonian.
@@ -77,7 +78,7 @@ def random_H1(symm_ops):
     return symmetrize_onebody(H, symm_ops)
 
 
-def onebody_symm_basis(symm_ops):
+def onebody_symm_basis(symm_ops:np.ndarray):
     """
     Takes each element of one-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.
@@ -110,7 +111,7 @@ def onebody_symm_basis(symm_ops):
                 Asymm_list.append(Asymm)
     return Asymm_list
 
-def symmetrize_twobody(O, symm_ops):
+def symmetrize_twobody(O:np.ndarray, symm_ops:np.ndarray):
     """
     Performs symm_op.T @ O @ symm_op and averages for length of symm_ops. 
 
@@ -127,7 +128,7 @@ def symmetrize_twobody(O, symm_ops):
     O_symm/=symm_ops.shape[0]
     return O_symm
 
-def random_H2(symm_ops):
+def random_H2(symm_ops:np.ndarray):
     """
     This function takes in a system's symmetry operators to constructs a random
     hermitian 2-body Hamiltonian.
@@ -143,7 +144,7 @@ def random_H2(symm_ops):
     H = 0.5*(H+H.T) # Hermitian
     return symmetrize_twobody(H, symm_ops)
 
-def twobody_symm_basis(symm_ops):
+def twobody_symm_basis(symm_ops:np.ndarray):
     """
     Takes each element of two-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.
@@ -181,7 +182,7 @@ def twobody_symm_basis(symm_ops):
                         Asymm_list.append(Asymm)
     return Asymm_list
 
-def save_symm_term_group( fname, symm_terms):
+def save_symm_term_group(fname:str, symm_terms:np.ndarray):
     '''
     Args:
         fname : str
@@ -201,7 +202,7 @@ def save_symm_term_group( fname, symm_terms):
             f[f'group{i}/indices']  = index
     return
 
-def generate_group(current_list, generators):
+def generate_group(current_list:np.ndarray, generators:np.ndarray):
     """
     current_list: list of symmetry operators currently in the set. Should be numpy 2D arrays. 
     generators: list of symmetry generators. Should be numpy 2D arrays. 
