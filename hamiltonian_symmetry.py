@@ -202,41 +202,56 @@ def save_symm_term_group(fname:str, symm_terms:np.ndarray):
             f[f'group{i}/indices']  = index
     return
 
-def generate_group(current_list:np.ndarray, generators:np.ndarray):
+def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, iteration:int=0, maximum_group_size:int=1000):
     """
-    current_list: list of symmetry operators currently in the set. Should be numpy 2D arrays. 
-    generators: list of symmetry generators. Should be numpy 2D arrays. 
-
-    EXAMPLE: c3v for a triangle
-    generators = np.asarray( [ 
-    [ #Identity
-      [1,0,0],
-      [0,1,0],
-      [0,0,1],
-    ],
-    [ #rotation
-      [0,1,0],
-      [0,0,1],
-      [1,0,0],
-    ],
-    [ #mirror
-      [1,0,0],
-      [0,0,1],
-      [0,1,0],
-    ],
-    ])
-    symmetry_operations = generate_group(generators, generators)
+        current_list: list of symmetry operators currently in the set. Should be numpy 2D arrays.
+        generators: list of symmetry generators. Should be numpy 2D arrays.
+        round: number of digits to round to when checking for duplicates
+        interation: iteration number, CAN be used if keeping track of interation
+                    or killing after certain number of iterations
+        maximum_group_size: will kill recoursion after the number of symmetry 
+                            operators in current_list exceeds this value.
+    ​
+        EXAMPLE: c3v for a triangle
+        generators = np.asarray( [
+        [ #Identity
+          [1,0,0],
+          [0,1,0],
+          [0,0,1],
+        ],
+        [ #rotation
+          [0,1,0],
+          [0,0,1],
+          [1,0,0],
+        ],
+        [ #mirror
+          [1,0,0],
+          [0,0,1],
+          [0,1,0],
+        ],
+        ])
+        symmetry_operations = generate_group(generators, generators)
     """
+    if current_list.shape[0] > maximum_group_size:
+        raise ValueError("Group size is too large.")
+    # generate new operators
     added_ops = []
     for op in current_list:
         for gen in generators:
-            added_ops.append(gen@op)
-    new_list = np.unique(np.vstack((current_list, np.asarray(added_ops))), axis=0)
+            added_ops.append(gen @ op)
+    added_ops = np.asarray(added_ops)
+
+    # remove duplicates
+    stack = np.vstack((current_list, np.asarray(added_ops)))
+    new_list, new_inds = np.unique(
+        np.round(stack, round), 
+        axis=0, return_index=True
+    )
+    new_list = stack[new_inds]
 
     if new_list.shape[0] == current_list.shape[0]:
         return new_list
-    return generate_group(new_list, generators)
-
+    return generate_group(new_list, generators, iteration=iteration+1)
 
 if __name__ == "__main__":
 
