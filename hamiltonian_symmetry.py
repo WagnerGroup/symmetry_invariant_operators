@@ -204,6 +204,16 @@ def save_symm_term_group(fname:str, symm_terms:np.ndarray):
 
 def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, iteration:int=0, maximum_group_size:int=1000):
     """
+        The group size for a given point group are well defined and should be 
+        referenced via a table. The generated group size should be
+        less than or equal to the point group size. 
+        If the generated group size is less than the point group size, it should
+        be checked that it is due to basis of the symmetry operators. 
+        Example: s obitals symmetry operator for H4 molecule. 
+        H4 molecule has D4H symmetry, but the generated group will have D4 
+        symmetry as the s orbitals do not break sigma_h symmetry. 
+
+        Args:
         current_list: list of symmetry operators currently in the set. Should be numpy 2D arrays.
         generators: list of symmetry generators. Should be numpy 2D arrays.
         round: number of digits to round to when checking for duplicates
@@ -231,6 +241,7 @@ def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, 
         ],
         ])
         symmetry_operations = generate_group(generators, generators)
+        symmetry_operations.shape[0] # group size
     """
     if current_list.shape[0] > maximum_group_size:
         raise ValueError("Group size is too large.")
