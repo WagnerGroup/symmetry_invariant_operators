@@ -295,6 +295,61 @@ def generate_rotation_p_orbitals(a:float, b:float, norb:int=3, tol:float=1e-4, b
 
     return symmop
 
+def generate_rotation_d_orbitals(a:float, b:float, norb:int=3, tol:float=1e-4, basis_change=None):
+    # http://openmopac.net/manual/rotate_atomic_orbitals.html
+    # Basis ordering: {d_{x^2-y^2}, d_{xz}, d_{z^2}, d_{yz}, d_{xy}}
+    # Spherical coordinates: a = rotation angle about z, b = rotation angle about x
+    if basis_change is None:
+        basis_change = np.eye(norb)
+
+    R_x2_y2_x2_y2 = (2 * (np.cos(a) ** 2) - 1) * (np.cos(b) ** 2) + 0.5 * (
+        2 * (np.cos(a) ** 2) - 1
+    ) * (np.sin(b) ** 2)
+    R_x2_y2_xz = -np.cos(a) * np.sin(b) * np.cos(b)
+    R_x2_y2_z2 = np.sqrt(3 / 4) * (np.sin(b) ** 2)
+    R_x2_y2_yz = -np.sin(a) * np.sin(b) * np.cos(b)
+    R_x2_y2_xy = 2 * np.sin(a) * np.cos(a) * (np.cos(b) ** 2) + np.sin(a) * np.cos(
+        a
+    ) * (np.sin(b) ** 2)
+
+    R_xz_x2_y2 = (2 * (np.cos(a) ** 2) - 1) * np.sin(b) * np.cos(b)
+    R_xz_xz = np.cos(a) * (2 * (np.cos(b) ** 2) - 1)
+    R_xz_z2 = -np.sqrt(3) * np.sin(b) * np.cos(b)
+    R_xz_yz = np.sin(a) * (2 * (np.cos(b) ** 2) - 1)
+    R_xz_xy = 2 * np.sin(a) * np.cos(a) * np.sin(b) * np.cos(b)
+
+    R_z2_x2_y2 = np.sqrt(3 / 4) * (2 * (np.cos(a) ** 2) - 1) * (np.sin(b) ** 2)
+    R_z2_xz = np.sqrt(3) * np.cos(a) * np.sin(b) * np.cos(b)
+    R_z2_z2 = (np.cos(b) ** 2) - 0.5 * (np.sin(b) ** 2)
+    R_z2_yz = np.sqrt(3) * np.sin(a) * np.sin(b) * np.cos(b)
+    R_z2_xy = np.sqrt(3) * np.sin(a) * np.cos(a) * (np.sin(b) ** 2)
+
+    R_yz_x2_y2 = -2 * np.sin(a) * np.cos(a) * np.sin(b)
+    R_yz_xz = -np.sin(a) * np.cos(b)
+    R_yz_z2 = 0
+    R_yz_yz = np.cos(a) * np.cos(b)
+    R_yz_xy = (2 * (np.cos(a) ** 2) - 1) * np.sin(b)
+
+    R_xy_x2_y2 = -2 * np.sin(a) * np.cos(a) * np.cos(b)
+    R_xy_xz = np.sin(a) * np.sin(b)
+    R_xy_z2 = 0
+    R_xy_yz = -np.cos(a) * np.sin(b)
+    R_xy_xy = (2 * (np.cos(a) ** 2) - 1) * np.cos(b)
+
+    symmop = np.array(
+        [
+            [R_x2_y2_x2_y2, R_x2_y2_xz, R_x2_y2_z2, R_x2_y2_yz, R_x2_y2_xy],
+            [R_xz_x2_y2, R_xz_xz, R_xz_z2, R_xz_yz, R_xz_xy],
+            [R_z2_x2_y2, R_z2_xz, R_z2_z2, R_z2_yz, R_z2_xy],
+            [R_yz_x2_y2, R_yz_xz, R_yz_z2, R_yz_yz, R_yz_xy],
+            [R_xy_x2_y2, R_xy_xz, R_xy_z2, R_xy_yz, R_xy_xy],
+        ]
+    )
+    symmop = np.einsum("ij,ai,bj->ab", symmop, basis_change, basis_change)
+    assert np.linalg.norm(np.einsum("ij,jk->ik", symmop.T, symmop) - np.eye(norb)) < tol
+
+    return symmop
+
 if __name__ == "__main__":
 
     '''
