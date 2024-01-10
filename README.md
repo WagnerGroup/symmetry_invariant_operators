@@ -6,8 +6,10 @@ This can be used to constuct 2-body symmetry invariant Hamiltonians for a given 
 
 ## 2-body Hamiltonian
 
-Given a second quantized version of the 2-body Hamiltonian:
-$$ \hat{H} = \sum_{i,j} t_{ij} \hat{c}_i^\dag \hat{c}_j^{} + \sum_{i,j,k,l} V_{ijkl} \hat{c}_i^{\dag} \hat{c}_j \hat{c}_k^\dag \hat{c}_l^{} $$
+Given a second quantized version of the 2-body Hamiltonian: 
+
+$\hat{H} = \sum_{i,j} t_{ij} c_i^\dagger c_j + \sum_{i,j,k,l} V_{ijkl} \hat{c}_i^{\dagger} \hat{c}_j \hat{c}_k^\dagger \hat{c}_l^{}$
+
 where $i,j,k,l$ are the indicies of the atoms.
 
 And some set of symmetry operators $\{\hat{S}\}$ for the above Hamiltonian it is true that $ \hat{S} \hat{H} \hat{S} = \hat{H}$, it is invariant to the finite group of symmetry operators.
