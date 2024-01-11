@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "symmetry_invariant_operators"
+requires-python = ">=3.11" #? Restrictive or less so?
+authors = [
+    {name = "Sonali Joshi", email = "sonalij3@illnois.edu"},
+    #{name = "Lucas K. Wagner"}
+    #{name = "Kevin Kleiner"}
+]
+maintainers = [
+    {name = "Sonali Joshi", email = "sonalij3@illinois.edu"}
+]
+description = "A package to generate a set of symmetry invariant operators given a finite group."
+readme = "README.md"
+keywords = ["effective hamiltonians"] #?
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3"
+]
+dynamic = ["version"]
+dependencies = [
+    "numpy",
+    "h5py",
+    "rich"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "symmetry_invariant_operators.__version__"}
+
+[project.optional-dependencies]
+sites = ["pymatgen"]
+vis = ["matplotlib"]
+
+[project.urls]
+Repository = "https://github.com/WagnerGroup/hamiltonian_symmetry"
