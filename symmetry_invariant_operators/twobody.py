@@ -17,7 +17,7 @@ def symmetrize_twobody(O:np.ndarray, symm_ops:np.ndarray):
     O_symm/=symm_ops.shape[0]
     return O_symm
 
-def twobody_symm_basis(symm_ops:np.ndarray):
+def twobody_basis(symm_ops:np.ndarray):
     """
     Takes each element of two-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.

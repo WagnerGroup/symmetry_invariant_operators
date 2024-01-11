@@ -4,7 +4,7 @@ from typing import List
 from pymatgen.core import Molecule
 from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 
-def get_site_symm_ops(species:List[str], geom:np.ndarray, center:bool = True) -> np.ndarray:
+def get_site_operations(species:List[str], geom:np.ndarray, center:bool = True) -> np.ndarray:
     """
     Grabs point group symmetry of an arrangement of atoms. Uses pymatgen to grab
     the cartesian symmetry operators for said point group. Then converts the

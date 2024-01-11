@@ -17,7 +17,7 @@ def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):
     O_symm/=symm_ops.shape[0]
     return O_symm
 
-def onebody_symm_basis(symm_ops:np.ndarray):
+def onebody_basis(symm_ops:np.ndarray):
     """
     Takes each element of one-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.

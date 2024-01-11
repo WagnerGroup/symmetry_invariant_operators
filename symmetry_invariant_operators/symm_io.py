@@ -2,7 +2,7 @@ import numpy as np
 
 import h5py
 
-def save_symm_term_group(fname:str, symm_terms:np.ndarray):
+def save_to_hdf5(fname:str, symm_terms:np.ndarray):
     '''
     Args:
         fname : str
