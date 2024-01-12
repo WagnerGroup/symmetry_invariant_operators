@@ -2,8 +2,9 @@
 # MIT License ( see "LICENSE")
 
 import numpy as np
+from typing import List
 
-def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):
+def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray) -> np.ndarray:
     """
     Performs symm_op.T @ O @ symm_op and averages for length of symm_ops. 
 
@@ -20,7 +21,7 @@ def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):
     O_symm/=symm_ops.shape[0]
     return O_symm
 
-def onebody_basis(symm_ops:np.ndarray, rtol: float=1e-5):
+def onebody_basis(symm_ops:np.ndarray, rtol: float=1e-5) -> List[np.ndarray]:
     """
     Takes each element of one-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.

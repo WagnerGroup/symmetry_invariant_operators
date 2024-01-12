@@ -11,4 +11,4 @@ from .symm_io import save_to_hdf5
 
 name = "symmetry_invariant_operators"
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"

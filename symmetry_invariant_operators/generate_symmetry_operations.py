@@ -44,7 +44,7 @@ def get_site_operations(species:List[str], geom:np.ndarray, center:bool = True) 
 
     return site_symm_ops
 
-def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, iteration:int=0, maximum_group_size:int=1000):
+def generate_group(current_list:np.ndarray, generators:np.ndarray, round:int=9, iteration:int=0, maximum_group_size:int=1000) -> np.ndarray:
     """
         The group size for a given point group are well defined and should be 
         referenced via a table. The generated group size should be
