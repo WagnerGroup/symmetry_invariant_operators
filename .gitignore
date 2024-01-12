@@ -3,3 +3,4 @@
 
 # python pip setuptools build files
 /symmetry_invariant_operators.egg-info/
+/build/

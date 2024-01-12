@@ -29,15 +29,15 @@ dynamic = ["version"]
 dependencies = [
     "numpy",
     "h5py",
-    "rich"
+    "rich",
+    "pymatgen" # In future will be changing this to a dependency
 ]
 
 [tool.setuptools.dynamic]
 version = {attr = "symmetry_invariant_operators.__version__"}
 
 [project.optional-dependencies]
-sites = ["pymatgen"]
 vis = ["matplotlib"]
 
 [project.urls]
-Repository = "https://github.com/WagnerGroup/hamiltonian_symmetry"
+Repository = "https://github.com/WagnerGroup/symmetry_invariant_operators"
