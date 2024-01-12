@@ -20,7 +20,7 @@ def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):
     O_symm/=symm_ops.shape[0]
     return O_symm
 
-def onebody_basis(symm_ops:np.ndarray):
+def onebody_basis(symm_ops:np.ndarray, rtol: float=1e-5):
     """
     Takes each element of one-body Hamiltonian and symmetrizes it to find
     symmetric invariant operators.
@@ -28,6 +28,7 @@ def onebody_basis(symm_ops:np.ndarray):
 
     Args: 
     symm_ops: symmetry operations with a shape [nsymmops, nsites, nsites]
+    rtol: The relative tolerance parameter (see np.allclose notes)
 
     Returns:
     Basis of one-body operators invariant to the symm_ops. 
@@ -44,7 +45,7 @@ def onebody_basis(symm_ops:np.ndarray):
             found=np.allclose(Asymm, np.zeros_like(Asymm))
             Asymm/=Asymm.max()
             for As in Asymm_list:
-                if np.allclose(As, Asymm):
+                if np.allclose(As, Asymm, rtol=rtol) or np.allclose(As, -Asymm, rtol=rtol):
                     found=True
                     break
             if not found:
