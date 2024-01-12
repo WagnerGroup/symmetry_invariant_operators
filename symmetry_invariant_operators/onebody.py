@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Sonali Joshi
+# MIT License ( see "LICENSE")
+
 import numpy as np
 
 def symmetrize_onebody(O:np.ndarray, symm_ops:np.ndarray):

@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Sonali Joshi
+# MIT License ( see "LICENSE")
+
 from .generate_symmetry_operations import ( get_site_operations,
                                             generate_group,
                                             generate_rotation_p_orbitals,

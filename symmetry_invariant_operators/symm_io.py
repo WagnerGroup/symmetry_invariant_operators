@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Sonali Joshi
+# MIT License ( see "LICENSE")
+
 import numpy as np
 
 import h5py
