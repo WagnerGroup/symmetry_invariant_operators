@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "symmetry_invariant_operators"
-requires-python = ">=3.11" #? Restrictive or less so?
+requires-python = ">=3.8"
 authors = [
     {name = "Sonali Joshi", email = "sonalij3@illnois.edu"},
     #{name = "Lucas K. Wagner"}
